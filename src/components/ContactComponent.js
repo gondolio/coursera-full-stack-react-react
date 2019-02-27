@@ -124,6 +124,7 @@ class Contact extends Component{
                         <h3>Send us your feedback</h3>
                     </div>
                     <div className="col-12 col-md-9">
+                        {/* An example of a controlled form in React (see HeaderComponent.js for uncontrolled form) */}
                         <Form onSubmit={this.handleSubmit}>
                             <FormGroup row>
                                 <Label htmlFor="firstname" md={2}>First Name</Label>
