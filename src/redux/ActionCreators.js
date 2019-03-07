@@ -1,16 +1,48 @@
 import * as ActionTypes from './ActionTypes';
-import { DISHES } from '../shared/dishes';
 import { baseUrl } from '../shared/baseUrl';
 
-export const addComment = (dishId, rating, author, comment) => ({
+export const addComment = (comment) => ({
     type: ActionTypes.ADD_COMMENT,
-    payload: {
-        author: author,
-        comment: comment,
-        dishId: dishId,
-        rating: rating,
-    }
+    payload: comment,
 });
+
+export const postComment = (dishId, rating, author, comment) => (dispatch) => {
+
+        const newComment = {
+            author: author,
+            comment: comment,
+            dishId: dishId,
+            rating: rating,
+        };
+        newComment.date = new Date().toISOString();
+
+        return fetch(baseUrl + 'comments', {
+            method: 'POST',
+            body: JSON.stringify(newComment),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (response.ok){
+                return response;
+            }
+            else {
+                var error = new Error('Error ' + response.status + ': ' + response.statusText)
+                error.response = response;
+                throw error;
+            }
+        },
+        error => {
+            var errmess = new Error(error.message);
+            throw errmess;
+        })
+        .then(response => response.json())
+        .then(response => dispatch(addComment(response)))
+        .catch(error => { console.log('Post comments', error.message)
+            alert('Your comment could not be posted\nError: ' + error.message)})
+}
 
 // Thunk lets us return a function instead of an action
 // This can be useful for more complex actions, such as in fetchDishes below
